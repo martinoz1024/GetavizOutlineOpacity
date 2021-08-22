@@ -75,6 +75,8 @@ public class ACityElement {
     private ACitySubType subType;
 
     private String color;
+    private double opacity;
+    private boolean transparency;
     private ACityShape shape;
     private String source;
     private String model;
@@ -211,6 +213,19 @@ public class ACityElement {
         this.model = gltfModel;
     }
 
+    public boolean getTransparency() {
+        if (this.type == ACityType.Building && this.shape == ACityShape.Box){
+            return true;
+        }
+        return false;
+    }
+
+    public double getOpacity(){
+        if(this.getTransparency()){
+            return 0.75;
+        }
+        return 1.0;
+    }
 
     public ACityElement getParentElement() {
         return parentElement;
