@@ -198,8 +198,61 @@ public class AFrameExporter {
     }
 
 
+    private String drawOutline(ACityElement element){
+        if(element.getType() != ACityElement.ACityType.Building || element.getShape() != ACityElement.ACityShape.Box){
+            return  "";
+        }
+        String id = element.getHash();
+        System.out.println("\t position=\"" + element.getXPosition() + " " + element.getYPosition() + " " + element.getZPosition() + "\"");
+        System.out.println("\t height=\"" + element.getHeight() + "\"");
+        System.out.println("\t width=\"" + element.getWidth() + "\"");
+        System.out.println("\t depth=\"" + element.getLength() + "\"");
+
+        StringBuilder builder = new StringBuilder();
+
+        double width = element.getWidth();
+        double depth = element.getLength();
+        double height = element.getHeight();
+        double x = element.getXPosition() - width / 2;
+        double y = element.getYPosition() - height / 2;
+        double z = element.getZPosition() - depth / 2;
+
+
+        String point1 = "" + x + " " + " " + y + " " + z;
+        String point2 = "" + (x + width) + " " + " " + y + " " + z;
+        String point3 = "" + x + " " + " " + y + " " + (z + depth);
+        String point4 = "" + (x + width) + " " + " " + y + " " + (z + depth);
+        String point5 = "" + x + " " + " " + (y + height) + " " + z;
+        String point6 = "" + (x + width) + " " + " " + (y + height) + " " + z;
+        String point7 = "" + x + " " + " " + (y + height) + " " + (z + depth);
+        String point8 = "" + (x + width) + " " + " " + (y + height) + " " + (z + depth);
+
+        builder.append("<a-entity line__"+ id +"1=\"start: "+ point1 + "; end: "+ point2 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"2=\"start: "+ point1 + "; end: "+ point3 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"3=\"start: "+ point2 + "; end: "+ point4 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"4=\"start: "+ point3 + "; end: "+ point4 +"; color: black\"\n");
+
+        builder.append("\tline__"+ id +"5=\"start: "+ point1 + "; end: "+ point5 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"6=\"start: "+ point2 + "; end: "+ point6 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"7=\"start: "+ point3 + "; end: "+ point7 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"8=\"start: "+ point4 + "; end: "+ point8 +"; color: black\"\n");
+                        
+        builder.append("\tline__"+ id +"9=\"start: "+ point5 + "; end: "+ point6 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"10=\"start: "+ point5 + "; end: "+ point7 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"11=\"start: "+ point6 + "; end: "+ point8 +"; color: black\"\n");
+        builder.append("\tline__"+ id +"12=\"start: "+ point7 + "; end: "+ point8 +"; color: black\"\n");
+        builder.append("shadow></a-entity>\n");
+        return builder.toString();
+    }
+
     private String createACityElementExport(ACityElement element){
         StringBuilder builder = new StringBuilder();
+
+        String id = element.getHash();
+        if (element.getType() == ACityElement.ACityType.Building && element.getShape() == ACityElement.ACityShape.Box){
+            StringBuilder  b = new StringBuilder();
+            id = b.append(element.getHash() + 1).toString();
+        }
 
         builder.append("<" + getShapeExport(element.getShape()) + " id=\"" + element.getHash() + "\"");
         builder.append("\n");
@@ -215,6 +268,13 @@ public class AFrameExporter {
             builder.append("\n");
         } else {
             builder.append("\t radius=\"" + (element.getWidth() / 2) + "\"");
+            builder.append("\n");
+        }
+
+        if(element.getTransparency()) {
+            builder.append("\t transparent=\"" + "true" + "\"");
+            builder.append("\n");
+            builder.append("\t opacity=\"" + element.getOpacity() + "\"");
             builder.append("\n");
         }
 
@@ -240,9 +300,12 @@ public class AFrameExporter {
         builder.append(">");
 
         builder.append("\n");
-
+        //builder.append(drawOutline(element));
         builder.append("</" + getShapeExport(element.getShape()) + ">");
         builder.append("\n");
+        builder.append(drawOutline(element));
+
+
         return builder.toString();
     }
 
